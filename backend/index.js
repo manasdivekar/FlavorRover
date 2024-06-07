@@ -1,8 +1,10 @@
 const express = require('express')
-const app = express()
-const port = 5000
+const dotenv = require("dotenv");
 const mongoDb = require('./db');
 mongoDb();
+dotenv.config()
+const app = express()
+const port = process.env.PORT || 5000;
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
