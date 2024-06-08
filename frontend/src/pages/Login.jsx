@@ -75,7 +75,7 @@ const Login = () => {
             />
           </div>
 
-          <button type="submit" className=" m-3 btn btn-success">
+          <button type="submit" onClick={handleSubmit} className=" m-3 btn btn-success">
             Submit
           </button>
 
