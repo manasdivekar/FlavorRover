@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Card from "../components/Card";
+import { BASE_URL } from "../url";
 
 const Home = () => {
   const [searchData, setSearchData] = useState("");
@@ -9,19 +10,24 @@ const Home = () => {
   const [foodItem, setFoodItem] = useState([]);
 
   const loadData = async () => {
-    let response = await fetch("http://localhost:5000/api/foodData", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      let response = await fetch(`${BASE_URL}/api/foodData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    response = await response.json();
-    console.log("response:", response);
+      response = await response.json();
+      console.log("response:", response);
 
-    setFoodItem(response[0]);
-    setFoodCat(response[1]);
-    // console.log(response[0] , response[1]);
+      if (response) {
+        setFoodItem(response[0] || []);
+        setFoodCat(response[1] || []);
+      }
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
   };
 
   useEffect(() => {
@@ -55,7 +61,6 @@ const Home = () => {
                     setSearchData(e.target.value);
                   }}
                 />
-                {/* <button className="btn btn-outline-success text-white bg-success" type="submit">Search</button> */}
               </div>
             </div>
             <div
@@ -119,51 +124,103 @@ const Home = () => {
         </div>
       </div>
       <div className="container">
-        {foodCat.length !== 0
-          ? foodCat.map((data) => {
-              return (
-                <div className="row mb-3">
-                  <div key={data._id} className="fs-3 m-4">
-                    {data.CategoryName}
-                  </div>
-                  <hr />
-                  {foodItem.length !== 0 ? (
-                    foodItem
-                      .filter(
-                        (item) =>
-                          item.CategoryName === data.CategoryName &&
-                          item.name
-                            .toLowerCase()
-                            .includes(searchData.toLocaleLowerCase())
-                      )
-                      .map((filterItems) => {
-                        return (
-                          <div
-                            key={filterItems._id}
-                            className="col-12 col-md-6 col-lg-3 "
-                          >
-                            <Card
-                              foodItems={filterItems}
-                              options={filterItems.options[0]}
-                            ></Card>
-                          </div>
-                        );
-                      })
-                  ) : (
-                    <div> No Such Data found</div>
-                  )}
-                </div>
-              );
-            })
-          : ""}
+        {foodCat !== [] ? (
+          foodCat.map((data) => {
+            return (
+              <div className="row mb-3" key={data._id}>
+                <div className="fs-3 m-4">{data.CategoryName}</div>
+                <hr />
+                {foodItem !== [] > 0 ? (
+                  foodItem
+                    .filter(
+                      (item) =>
+                        item.CategoryName === data.CategoryName &&
+                        item.name.toLowerCase().includes(searchData.toLowerCase())
+                    )
+                    .map((filterItems) => {
+                      return (
+                        <div key={filterItems._id} className="col-12 col-md-6 col-lg-3">
+                          <Card foodItems={filterItems} options={filterItems.options[0]} />
+                        </div>
+                      );
+                    })
+                ) : (
+                  <div>No Such Data found</div>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <div>Loading...</div>
+        )}
       </div>
-
       {/* Footer */}
       <div>
         <Footer />
       </div>
     </div>
   );
+
 };
 
 export default Home;
+
+
+
+
+
+
+
+
+{/* <div className="container">
+{" "}
+
+{foodCat !== []
+  ? foodCat.map((data) => {
+      return (
+        // justify-content-center
+        <div className="row mb-3">
+          <div key={data.id} className="fs-3 m-3">
+            {data.CategoryName}
+          </div>
+          <hr
+            id="hr-success"
+            style={{
+              height: "4px",
+              backgroundImage:
+                "-webkit-linear-gradient(left,rgb(0, 255, 137),rgb(0, 0, 0))",
+            }}
+          />
+          {foodItems !== [] ? (
+            foodItems
+              .filter(
+                (items) =>
+                  items.CategoryName === data.CategoryName &&
+                  items.name
+                    .toLowerCase()
+                    .includes(search.toLowerCase())
+              )
+              .map((filterItems) => {
+                return (
+                  <div
+                    key={filterItems.id}
+                    className="col-12 col-md-6 col-lg-3"
+                  >
+                    {console.log(filterItems.url)}
+                    <Card
+                      foodName={filterItems.name}
+                      item={filterItems}
+                      options={filterItems.options[0]}
+                      ImgSrc={filterItems.img}
+                    ></Card>
+                  </div>
+                );
+              })
+          ) : (
+            <div> No Such Data </div>
+          )}
+        </div>
+      );
+    })
+  : ""}
+</div> */}

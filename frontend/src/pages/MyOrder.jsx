@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import { BASE_URL } from "../url";
 
 export default function MyOrder() {
 
@@ -8,7 +9,7 @@ export default function MyOrder() {
 
     const fetchMyOrder = async () => {
         console.log(localStorage.getItem('userEmail'))
-        await fetch("http://localhost:5000/api/myOrderData", {
+        await fetch(`${BASE_URL}/api/myOrderData`, {
             // credentials: 'include',
             // Origin:"http://localhost:3000/login",
             method: 'POST',
@@ -45,7 +46,7 @@ export default function MyOrder() {
             <div className='container'>
                 <div className='row'>
 
-                    {orderData.length !== 0? Array(orderData).map(data => {
+                    {orderData !== [] ? Array(orderData).map(data => {
                         return (
                             data.orderData ?
                                 data.orderData.order_data.slice(0).reverse().map((item) => {
